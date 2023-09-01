@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol NetworkRequest {
+public protocol NetworkRequest {
     var scheme: String { get }
     var host: String { get }
     var path: String { get }
@@ -17,7 +17,7 @@ protocol NetworkRequest {
     var body: Data? { get }
 }
 
-extension NetworkRequest {
+public extension NetworkRequest {
     var scheme: String {
         "http"
     }
@@ -27,6 +27,6 @@ extension NetworkRequest {
     }
 }
 
-enum HTTPMethod: String {
+public enum HTTPMethod: String {
     case GET
 }

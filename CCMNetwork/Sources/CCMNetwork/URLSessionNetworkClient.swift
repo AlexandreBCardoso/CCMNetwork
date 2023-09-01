@@ -7,29 +7,38 @@
 
 import Foundation
 
-final class URLSessionNetworkClient: NetworkClient {
+public final class URLSessionNetworkClient: NetworkClient {
     
     private let client: URLSession
     
-    init(client: URLSession = URLSession.shared) {
+    public init(client: URLSession = URLSession.shared) {
         self.client = client
     }
 
-    func execute(_ networkRequest: NetworkRequest, completion: @escaping (Result<Data, Error>) -> Void) {
+    public func execute(_ networkRequest: NetworkRequest, completion: @escaping (Result<Data, NetworkError>) -> Void) {
         guard let urlRequest = NetworkRequestMapper.map(from: networkRequest) else {
-            return completion(.failure(NetworkError.invalidURL))
+            return completion(.failure(.invalidURL))
         }
         
         let task = client.dataTask(with: urlRequest) { data, response, error in
             if error != nil {
-                completion(.failure(NetworkError.networkError))
+                return completion(.failure(.networkError))
             }
             
-            guard let data else {
-                return completion(.failure(NetworkError.noData))
+            guard let response = (response as? HTTPURLResponse) else {
+                return completion(.failure(.networkError))
+            }
+
+            if !((200..<300) ~= response.statusCode) {
+                return completion(.failure(.invalidStatusCode))
             }
             
-            completion(.success(data))
+            if let data, data != Data() {
+                completion(.success(data))
+            } else {
+                return completion(.failure(.noData))
+            }
+
         }
         task.resume()
     }

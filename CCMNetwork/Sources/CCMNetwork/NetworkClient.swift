@@ -7,6 +7,6 @@
 
 import Foundation
 
-protocol NetworkClient {
-    func execute(_ request: NetworkRequest, completion: @escaping(Result<Data, Error>) -> Void)
+public protocol NetworkClient {
+    func execute(_ request: NetworkRequest, completion: @escaping(Result<Data, NetworkError>) -> Void)
 }

@@ -14,19 +14,17 @@ struct NetworkRequestMapper {
         urlComponents.scheme = request.scheme
         urlComponents.host = request.host
         urlComponents.path = request.path
-        urlComponents.queryItems = request.queryItems?.compactMap { key, value in
-            URLQueryItem(name: key, value: value)
-        }
+        urlComponents.queryItems = request.queryItems?.compactMap({
+            URLQueryItem(name: $0.key, value: $0.value)
+        })
         
-        if let url = urlComponents.url {
-            var urlRequest = URLRequest(url: url)
-            urlRequest.allHTTPHeaderFields = request.headers
-            urlRequest.httpMethod = request.method.rawValue
-            urlRequest.httpBody = request.body
-            return urlRequest
-        } else {
-            return nil
-        }
+        guard let url = urlComponents.url else { return nil }
+
+        var urlRequest = URLRequest(url: url)
+        urlRequest.allHTTPHeaderFields = request.headers
+        urlRequest.httpMethod = request.method.rawValue
+        urlRequest.httpBody = request.body
+        return urlRequest
     }
 
 }

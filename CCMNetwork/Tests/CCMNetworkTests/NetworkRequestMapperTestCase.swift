@@ -1,35 +1,56 @@
 //
 //  NetworkRequestMapperTestCase.swift
-//  
+//  CCMNetworkTests
 //
 //  Created by Alexandre Cardoso on 31/08/23.
 //
 
+@testable import CCMNetwork
 import XCTest
 
 final class NetworkRequestMapperTestCase: XCTestCase {
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    func test_map_validURLRequest() throws {
+        let requestFake = makeNetworkRequest(
+            headers: ["anyHeaderKey": "anyHeaderValue"],
+            queryItems: ["anyQueryKey": "anyQueryValue"]
+        )
+        let urlStringExpected = "https://any.website.com.br/v1?anyQueryKey=anyQueryValue"
+        let sut = NetworkRequestMapper.map(from: requestFake)
+        
+        XCTAssertNotNil(sut)
+        XCTAssertNil(sut?.httpBody)
+        XCTAssertEqual(sut?.httpMethod, "GET")
+        XCTAssertEqual(sut?.allHTTPHeaderFields, ["anyHeaderKey": "anyHeaderValue"])
+        XCTAssertEqual(sut?.url?.absoluteString, urlStringExpected)
+    }
+    
+    func test_map_invalidURLRequest() {
+        let requestFake = makeNetworkRequest(path: "v1")
+
+        XCTAssertNil(NetworkRequestMapper.map(from: requestFake))
     }
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
+}
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
+extension NetworkRequestMapperTestCase {
+    func makeNetworkRequest(
+        scheme: String = "https",
+        host: String = "any.website.com.br",
+        path: String = "/v1",
+        headers: [String: String]? = nil,
+        queryItems: [String: String]? = nil,
+        method: HTTPMethod = .GET,
+        body: Data? = nil
+    ) -> NetworkRequest {
+        return NetworkRequestFake(
+            scheme: scheme,
+            host: host,
+            path: path,
+            headers: headers,
+            queryItems: queryItems,
+            method: method,
+            body: body
+        )
     }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-
 }

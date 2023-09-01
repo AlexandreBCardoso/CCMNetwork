@@ -8,6 +8,7 @@ Coloque um ```x``` nos itens que se aplicam.
 - [ ] Não adiciona código duplicado.
 - [ ] Não contém código comentado.
 - [ ] Não contém código WIP.
+- [ ] Atualiza o CHANGELOG.
  
 ### Screenshots
 | Screenshot 1 | Screenshot 2 |
